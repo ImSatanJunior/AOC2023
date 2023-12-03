@@ -24,21 +24,18 @@ public class Day3 {
 
         int runningTotal = 0;
 
-        int xMax = 10;
-        int yMax = 10;
+        int xMax = 140;
+        int yMax = 140;
 
         char[][] characters = new char[yMax][xMax];
         for(int y = 0; y < yMax; y++){
             String currentLine = fileReader.nextLine();
             for(int x = 0; x < xMax; x++){
                 char currentCharacter = currentLine.charAt(x);
-                //System.out.println(currentCharacter);
-                if (currentCharacter != '.'){
-                    characters[y][x] = currentCharacter;
-                } else {
-                    characters[y][x] = 'a';
-                }
+                //System.out.print(currentCharacter+ ",");
+                characters[y][x] = currentCharacter;
             }
+            //System.out.println();
         }
 
         for(int y = 0; y < yMax; y++){
@@ -47,9 +44,9 @@ public class Day3 {
             int digitEnd = -1;
             for(int x = 0; x < xMax; x++){
 
-                char currChar = 'a';
+                char currChar = '.';
 
-                if(characters[y][x] == 'a'){
+                if(characters[y][x] == '.'){
                     //Do Nothing
                 } else {
                     currChar = characters[y][x];
@@ -90,25 +87,25 @@ public class Day3 {
                            for(int i = xStart; i <= xEnd; i++){
                                char character = characters[y-1][i];
 
-                               if(!Character.isDigit(character) && character != 'a'){
+                               if(!Character.isDigit(character) && character != '.'){
                                    hasSymbol = true;
                                }
                            }
                        }
 
-                       if(y < yMax - 1){
+                       if(y < (yMax - 1)){
                            for(int i = xStart; i <= xEnd; i++){
                                char character = characters[y+1][i];
 
-                               if(!Character.isDigit(character) && character != 'a'){
+                               if(!Character.isDigit(character) && character != '.'){
                                    hasSymbol = true;
                                }
                            }
                        }
 
-                        if(!Character.isDigit(characters[y][xStart]) && characters[y][xStart] != 'a'){
+                        if(!Character.isDigit(characters[y][xStart]) && characters[y][xStart] != '.'){
                             hasSymbol = true;
-                        } else if(!Character.isDigit(characters[y][xEnd]) && characters[y][xStart] != 'a'){
+                        } else if(!Character.isDigit(characters[y][xEnd]) && characters[y][xEnd] != '.'){
                             hasSymbol = true;
                         }
 
@@ -119,6 +116,7 @@ public class Day3 {
                         digitEnd = -1;
 
                         if(hasSymbol){
+                            //System.out.println(digit);
                             runningTotal+= digit;
                         }
                     }
