@@ -38,23 +38,27 @@ public class Day3 {
             //System.out.println();
         }
 
+        int[][] gears = new int[yMax][xMax];
+
         for(int y = 0; y < yMax; y++){
             String currentDigit = null;
             int digitStart = -1;
             int digitEnd = -1;
-            for(int x = 0; x < xMax; x++){
+            for(int x = 0; x < xMax; x++) {
 
                 char currChar = '.';
 
-                if(characters[y][x] == '.'){
+                if (characters[y][x] == '.') {
                     //Do Nothing
                 } else {
                     currChar = characters[y][x];
                 }
                 //System.out.println(currChar);
 
-                if(Character.isDigit(currChar)){
-                    if(currentDigit == null){
+                if (Character.isDigit(currChar)) {
+                    //System.out.println(currChar);
+                    //System.out.println("a");
+                    if (currentDigit == null) {
                         currentDigit = String.valueOf(currChar);
                         digitStart = x;
                     } else {
@@ -62,8 +66,12 @@ public class Day3 {
                     }
 
                     digitEnd = x;
-                } else {
-                    if(currentDigit != null){
+                }
+
+                if (!Character.isDigit(currChar) || (x == (xMax - 1)) && Character.isDigit(currChar)) {
+                    if (currentDigit != null) {
+                        //System.out.println(y);
+                        //System.out.println(currentDigit);
 
                         boolean hasSymbol = false;
 
@@ -75,59 +83,99 @@ public class Day3 {
                         int xEnd = digitEnd;
                         //System.out.println(xEnd);
 
-                        if(xStart > 0){
+                        if (xStart > 0) {
                             xStart--;
                         }
 
-                        if (xEnd < xMax - 1){
+                        if (xEnd < xMax - 1) {
                             xEnd++;
                         }
+                        int answer = 0;
+                        if (y > 0) {
+                            for (int i = xStart; i <= xEnd; i++) {
+                                char character = characters[y - 1][i];
 
-                       if(y > 0){
-                           for(int i = xStart; i <= xEnd; i++){
-                               char character = characters[y-1][i];
-
-                               if(!Character.isDigit(character) && character != '.'){
-                                   hasSymbol = true;
-                               }
-                           }
-                       }
-
-                       if(y < (yMax - 1)){
-                           for(int i = xStart; i <= xEnd; i++){
-                               char character = characters[y+1][i];
-
-                               if(!Character.isDigit(character) && character != '.'){
-                                   hasSymbol = true;
-                               }
-                           }
-                       }
-
-                        if(!Character.isDigit(characters[y][xStart]) && characters[y][xStart] != '.'){
-                            hasSymbol = true;
-                        } else if(!Character.isDigit(characters[y][xEnd]) && characters[y][xEnd] != '.'){
-                            hasSymbol = true;
+                                if (character == '*') {
+                                    if (gears[y - 1][i] == 0) {
+                                        System.out.println(digit);
+                                        System.out.println("here");
+                                        gears[y - 1][i] = digit;
+                                    } else {
+                                        gears[y - 1][i] = gears[y - 1][i] * digit;
+                                        answer = gears[y - 1][i];
+                                        hasSymbol = true;
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
+                        if (y < (yMax - 1)) {
+                            for (int i = xStart; i <= xEnd; i++) {
+                                char character = characters[y + 1][i];
 
-
-                        currentDigit = null;
-                        digitStart = -1;
-                        digitEnd = -1;
-
-                        if(hasSymbol){
-                            //System.out.println(digit);
-                            runningTotal+= digit;
+                                if (character == '*') {
+                                    if (gears[y + 1][i] == 0) {
+                                        System.out.println(digit);
+                                        System.out.println("here");
+                                        gears[y + 1][i] = digit;
+                                    } else {
+                                        gears[y + 1][i] = gears[y + 1][i] * digit;
+                                        answer = gears[y + 1][i];
+                                        hasSymbol = true;
+                                        break;
+                                    }
+                                }
+                            }
                         }
+
+                            if (!Character.isDigit(characters[y][xStart]) && characters[y][xStart] != '.') {
+                                char character = characters[y][xStart];
+
+                                if (character == '*') {
+                                    //System.out.println(digit);
+                                    if (gears[y ][xStart] == 0) {
+                                        gears[y][xStart] = digit;
+                                    } else {
+                                        gears[y][xStart] = gears[y][xStart] * digit;
+                                        answer = gears[y][xStart];
+                                        hasSymbol = true;
+                                    }
+                                }
+                            } else if (!Character.isDigit(characters[y][xEnd]) && characters[y][xEnd] != '.') {
+                                    char chars = characters[y][xEnd];
+                                    if (chars == '*') {
+                                        //System.out.println(digit);
+                                        if (gears[y][xEnd] == 0) {
+                                            gears[y][xEnd] = digit;
+                                        } else {
+                                            gears[y][xEnd] = gears[y][xEnd] * digit;
+                                            answer = gears[y][xEnd];
+                                            hasSymbol = true;
+                                        }
+                                    }
+                                }
+
+
+                                    currentDigit = null;
+                                    digitStart = -1;
+                                    digitEnd = -1;
+
+                                    if (hasSymbol) {
+                                        System.out.println(answer);
+                                        runningTotal += answer;
+                                    }
                     }
+
+
+
+
+                }
 
                 }
             }
-
-        }
-
         System.out.println(runningTotal);
-    }
+        }
 
     public int parseLine(String currentLine){
         return 0;
