@@ -76,7 +76,6 @@ public class Day7 {
 
     Scanner scanner;
     Scanner fileReader;
-    char cards[] = {'0', '2', '3', '4', '5', '6', '7', '8', '9', 'E', 'J', 'Q', 'X', 'A'};
     ArrayList<Deck> decks;
 
     public Day7(){
@@ -135,10 +134,14 @@ public class Day7 {
                 newDeck[i] = 'E';
             } else if(deck.charAt(i) ==  'A'){
                 newDeck[i] = 'Z';
-            } else {
+            }
+            else if(deck.charAt(i) ==  'J'){
+                newDeck[i] = '0';
+            }else {
                 newDeck[i] = deck.charAt(i);
             }
         }
+
 
         return String.valueOf(newDeck);
     }
@@ -149,9 +152,16 @@ public class Day7 {
         char comparingCharacter;
         boolean isFullHouse = false;
 
+        int numJacks = 0;
+        for(int i = 0; i < deck.length(); i++){
+            if(deck.charAt(i) == '0'){
+                numJacks++;
+            }
+        }
 
         for(int i = 0; i < deck.length(); i++){
             comparingCharacter = deck.charAt(i);
+
             int matching = 0;
             for(int j = 0; j < deck.length(); j++){
                 if (comparingCharacter == deck.charAt(j)){
@@ -172,6 +182,28 @@ public class Day7 {
                 matchingCharacter = comparingCharacter;
             }
 
+        }
+
+        if(numJacks == 4){
+            numMatching++;
+        }
+
+        if(numJacks == 3){
+            if(isFullHouse){
+                numMatching++;
+            }
+            numMatching++;
+        }
+
+        if(numJacks == 2){
+            if (isFullHouse){
+                numMatching++;
+            }
+            numMatching++;
+        }
+
+        if(numJacks == 1){
+            numMatching++;
         }
 
         if(numMatching > 3){
