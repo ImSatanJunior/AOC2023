@@ -34,33 +34,33 @@ public class Day7 {
                 return -1;
             }
 
-            if(Character.compare(this.deck.charAt(0), o.deck.charAt(0)) > 0){
+            if(this.deck.charAt(0) > o.deck.charAt(0)){
                 return 1;
-            } else if(Character.compare(this.deck.charAt(0), o.deck.charAt(0)) < 0){
+            } else if(this.deck.charAt(0) < o.deck.charAt(0)){
                 return -1;
             }
 
-            if(Character.compare(this.deck.charAt(1), o.deck.charAt(1)) > 0){
+            if(this.deck.charAt(1) > o.deck.charAt(1)){
                 return 1;
-            } else if(Character.compare(this.deck.charAt(1), o.deck.charAt(1)) < 0){
+            } else if(this.deck.charAt(1) < o.deck.charAt(1)){
                 return -1;
             }
 
-            if(Character.compare(this.deck.charAt(2), o.deck.charAt(2)) > 0){
+            if(this.deck.charAt(2) > o.deck.charAt(2)){
                 return 1;
-            } else if(Character.compare(this.deck.charAt(2), o.deck.charAt(2)) < 0){
+            } else if(this.deck.charAt(2) < o.deck.charAt(2)){
                 return -1;
             }
 
-            if(Character.compare(this.deck.charAt(3), o.deck.charAt(3)) > 0){
+            if(this.deck.charAt(3) > o.deck.charAt(3)){
                 return 1;
-            } else if(Character.compare(this.deck.charAt(3), o.deck.charAt(3)) < 0){
+            } else if(this.deck.charAt(3) < o.deck.charAt(3)){
                 return -1;
             }
 
-            if(Character.compare(this.deck.charAt(4), o.deck.charAt(4)) > 0){
+            if(this.deck.charAt(4) > o.deck.charAt(4)){
                 return 1;
-            } else if(Character.compare(this.deck.charAt(4), o.deck.charAt(4)) < 0){
+            } else if(this.deck.charAt(4) < o.deck.charAt(4)){
                 return -1;
             }
 
