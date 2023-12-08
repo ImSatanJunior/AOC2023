@@ -1,21 +1,20 @@
 package Day8;
 
-import com.sun.source.tree.BinaryTree;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.google.common.math.LongMath.gcd;
+
 public class Day8 {
     Scanner scanner;
     Scanner fileReader;
-    String startPoint = null;
-    String endPoint = null;
-    BinaryTrees binaryTree;
+    String startPoint = "AAA";
+    String endPoint = "ZZZ";
 
-    ArrayList<TreeNode> nodesNotInTree = new ArrayList<>();
-    ArrayList<String> locationsNotInTree = new ArrayList<>();
+    ArrayList<TreeNode> treeNodes = new ArrayList<>();
+    ArrayList<String> locations = new ArrayList<>();
 
     public Day8(){
         scanner = new Scanner(System.in);
@@ -44,29 +43,66 @@ public class Day8 {
         }
 
 
-        while (!nodesNotInTree.isEmpty()){
 
-        }
+        ArrayList<Integer> foundZ = new ArrayList<>();
 
-        int i = 0;
-        int numSteps = 0;
+        String currentLocation = null;
+        int l = 0;
+        TreeNode currentNode = null;
 
-        TreeNode currentNode = binaryTree.root;
-        while (!currentNode.getCurrentLocation().equals(endPoint)){
-            if (instructions.get(i).equals('L')){
-                currentNode = currentNode.getLeft();
-            } else {
-                currentNode = currentNode.getRight();
+
+        for(int j = 0; j < locations.size(); j++){
+            int i = 0;
+            int numSteps = 0;
+            if(locations.get(j).charAt(2) == 'A'){
+                currentLocation = locations.get(j);
+                l = locations.indexOf(currentLocation);
+                currentNode = treeNodes.get(l);
+
+                while (currentNode.getCurrentLocation().charAt(2) != 'Z'){
+
+                    if (instructions.get(i).equals('L')){
+                        currentLocation = currentNode.getLeft().getCurrentLocation();
+                    } else if(instructions.get(i).equals('R')){
+                        currentLocation = currentNode.getRight().getCurrentLocation();
+                    } else {
+                        System.err.println("Instruction Incorrect");
+                    }
+
+                    l = locations.indexOf(currentLocation);
+                    currentNode = treeNodes.get(l);
+
+                    i++;
+                    if(i == instructions.size()){
+                        i = 0;
+                    }
+                    numSteps++;
+                }
+                foundZ.add(numSteps);
             }
-            i++;
-            i = i % instructions.size();
-            numSteps++;
+
         }
 
-        System.out.println(numSteps);
+
+
+        System.out.println(lcm(foundZ));
         long end = System.currentTimeMillis();
         long time = end - start;
         System.out.println(time + "ms");
+    }
+
+    private static long lcm(long a, long b)
+    {
+        return a * (b / gcd(a, b));
+    }
+
+    private static long lcm(ArrayList<Integer> input)
+    {
+        long result = input.get(0);
+        for(int i = 1; i < input.size(); i++){
+            result = lcm(result, input.get(i));
+        }
+        return result;
     }
 
     public void parseLine(String currentLine) {
@@ -76,50 +112,23 @@ public class Day8 {
         TreeNode leftNode = null;
         TreeNode rightNode = null;
 
-        if(binaryTree != null){
-            //Left Already Exists In Tree
-            if(binaryTree.findNode(remainingStrings[0]) != null){
-                leftNode = binaryTree.foundNode;
-            }
+        if(locations.contains(remainingStrings[0])){
+            int i = locations.indexOf(remainingStrings[0]);
+            leftNode = treeNodes.get(i);
+        }
 
-            //Right Already Exists In Tree
-            if(binaryTree.findNode(remainingStrings[1]) != null){
-                rightNode = binaryTree.foundNode;
-            }
+        if(locations.contains(remainingStrings[1])){
+            int i = locations.indexOf(remainingStrings[1]);
+            rightNode = treeNodes.get(i);
         }
 
         if(leftNode == null){
-            if(locationsNotInTree.contains(remainingStrings[0])){
-                int i = locationsNotInTree.indexOf(remainingStrings[0]);
-                leftNode = nodesNotInTree.get(i);
-                locationsNotInTree.remove(i);
-                nodesNotInTree.remove(i);
-            }
-        }
-
-        if(rightNode == null){
-            if(locationsNotInTree.contains(remainingStrings[1])){
-                int i = locationsNotInTree.indexOf(remainingStrings[1]);
-                leftNode = nodesNotInTree.get(i);
-                locationsNotInTree.remove(i);
-                nodesNotInTree.remove(i);
-            }
-        }
-
-
-
-        if(remainingStrings[0].equals(remainingStrings[1]) && leftNode == null){
             leftNode = new TreeNode(remainingStrings[0], null, null);
+        }
+        if(remainingStrings[0].equals(remainingStrings[1])){
             rightNode = leftNode;
-
-        } else {
-            if(leftNode == null){
-                leftNode = new TreeNode(remainingStrings[0], null, null);
-            }
-            if(rightNode == null){
-                rightNode = new TreeNode(remainingStrings[1], null, null);
-            }
-
+        } else if(rightNode == null){
+            rightNode = new TreeNode(remainingStrings[1], null, null);
         }
 
         if(remainingStrings[0].equals(strings[0])){
@@ -127,26 +136,7 @@ public class Day8 {
             rightNode = null;
         }
 
-        if(startPoint == null){
-            startPoint = strings[0];
-            binaryTree = new BinaryTrees(new TreeNode(strings[0], null, null));
-            if(leftNode == rightNode){
-                binaryTree.root.setLeftNode(leftNode);
-                binaryTree.root.setRightNode(leftNode);
-            } else {
-                binaryTree.root.setLeftNode(leftNode);
-                binaryTree.root.setRightNode(rightNode);
-            }
-
-        } else {
-            TreeNode currentNode = binaryTree.findNode(strings[0]);
-            if(currentNode == null){
-               currentNode = new TreeNode(strings[0], null, null);
-               nodesNotInTree.add(currentNode);
-               locationsNotInTree.add(strings[0]);
-            }
-
-
+            TreeNode currentNode = new TreeNode(strings[0], null, null);
             if(leftNode == rightNode){
                 currentNode.setLeftNode(leftNode);
                 currentNode.setRightNode(leftNode);
@@ -154,8 +144,10 @@ public class Day8 {
                 currentNode.setLeftNode(leftNode);
                 currentNode.setRightNode(rightNode);
             }
-            endPoint = strings[0];
-        }
+
+            treeNodes.add(currentNode);
+            locations.add(strings[0]);
+
 
 
 
