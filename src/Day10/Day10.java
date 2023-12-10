@@ -16,11 +16,7 @@ public class Day10 {
             this.x = x;
             this.y = y;
             this.direction = direction;
-            this.direction = currentDistance;
-        }
-
-        public void setDirection(int direction) {
-            this.direction = direction;
+            this.distance = currentDistance;
         }
 
         @Override
@@ -50,6 +46,9 @@ public class Day10 {
     int currentDistance = -1;
     int maxDistance = 0;
 
+    int xLength = 140;
+    int yLength = 140;
+
     public Day10(){
         scanner = new Scanner(System.in);
     }
@@ -67,13 +66,10 @@ public class Day10 {
 
         int runningTotal = 0;
 
-        int xMax = 5;
-        int yMax = 5;
-
-        char[][] characters = new char[yMax][xMax];
-        for(int y = 0; y < yMax; y++){
+        char[][] characters = new char[yLength][xLength];
+        for(int y = 0; y < yLength; y++){
             String currentLine = fileReader.nextLine();
-            for(int x = 0; x < xMax; x++){
+            for(int x = 0; x < xLength; x++){
                 char currentCharacter = currentLine.charAt(x);
                 if (currentCharacter == 'S'){
                     startX = x;
@@ -87,15 +83,13 @@ public class Day10 {
 
         //0 None, 1 Up, 2 Right, 3 Left, 4 Down;
 
-        traversePipes(characters, new Coordinate(startX, startY, 0, -1));
+        traversePipes(characters, new Coordinate(startX, startY, 0, 0));
 
 
         System.out.println(maxDistance);
     }
 
 
-
-    private Coordinate endCoordinate;
     Queue<Coordinate> nextTraverse = new LinkedList<>();
     ArrayList<Coordinate> visited = new ArrayList<>();
 
@@ -103,8 +97,8 @@ public class Day10 {
 
         Queue<Coordinate> coordinateQueue = new LinkedList<>();
 
-        if(currentCoordinate.x < 0 || currentCoordinate.y < 0 || currentCoordinate.x >= 5 || currentCoordinate.y >= 5){
-            System.err.println("Character Not In Range");
+        if(currentCoordinate.x < 0 || currentCoordinate.y < 0 || currentCoordinate.x >= xLength || currentCoordinate.y >= yLength){
+            System.out.println("Character Not In Range");
             return null;
         }
 
@@ -114,17 +108,14 @@ public class Day10 {
             return null;
         }
 
-        currentCoordinate.distance++;
-
-        if(currentCoordinate.distance > maxDistance){
-            maxDistance = currentCoordinate.distance;
-        }
-
         if(visited.contains(currentCoordinate)){
-            endCoordinate = currentCoordinate;
             return null;
         } else {
             visited.add(currentCoordinate);
+        }
+
+        if(currentCoordinate.distance > maxDistance){
+            maxDistance = currentCoordinate.distance;
         }
 
 
@@ -132,72 +123,86 @@ public class Day10 {
         switch (currentChar){
             case 'S':
                 //Check All Possible Surrounding Squares;
-                nextTraverse.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance++));
-                nextTraverse.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance++));
-                nextTraverse.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance++));
-                nextTraverse.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance++));
+
+                char nextChar = pipes[currentCoordinate.y - 1][currentCoordinate.x];
+
+                if(nextChar == '|' || nextChar == 'F' || nextChar == '7'){
+                    nextTraverse.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance+ 1));
+                }
+
+                nextChar = pipes[currentCoordinate.y + 1][currentCoordinate.x];
+                if(nextChar == '|' || nextChar == 'L' || nextChar == 'J'){
+                    nextTraverse.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance + 1));
+                }
+
+                nextChar = pipes[currentCoordinate.y][currentCoordinate.x +1];
+                if(nextChar == '-' || nextChar == '7' || nextChar == 'J'){
+                    nextTraverse.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance + 1));
+                }
+
+                nextChar = pipes[currentCoordinate.y][currentCoordinate.x - 1];
+                if(nextChar == '-' || nextChar == 'L' || nextChar == 'F'){
+                    nextTraverse.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance + 1));
+                }
+
+
+
                 break;
             case '|':
                 //Check Vertically Opposite Of Previous Direction
                 if(currentCoordinate.direction == 1){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 3){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             case '-':
                 //Check Horizontally Opposite Of Previous Direction
                 if(currentCoordinate.direction == 2){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 4){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             case 'L':
                 //Connects North To East, Check Direction
                 if(currentCoordinate.direction == 3){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 4){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             case 'J':
                 //Check Horizontally Opposite Of Previous Direction
                 if(currentCoordinate.direction == 3){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 2){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y - 1, UP, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             case '7':
                 //Check Horizontally Opposite Of Previous Direction
                 if(currentCoordinate.direction == 1){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x - 1, currentCoordinate.y, LEFT, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 2){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             case 'F':
                 //Check Horizontally Opposite Of Previous Direction
                 if(currentCoordinate.direction == 1){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x + 1, currentCoordinate.y, RIGHT, currentCoordinate.distance+ 1));
                 } else if(currentCoordinate.direction == 4){
-                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance++));
+                    coordinateQueue.add(new Coordinate(currentCoordinate.x, currentCoordinate.y + 1, DOWN, currentCoordinate.distance+ 1));
                 }
-                currentDistance--;
                 return coordinateQueue;
             default:
                 //Is A Dot, Not A Valid Path
-                currentDistance--;
                 return null;
         }
 
         while (!nextTraverse.isEmpty()){
+
             Coordinate nextCoordinate = nextTraverse.remove();
 
             System.out.println("X: " + nextCoordinate.x + ",Y: " + nextCoordinate.y);
